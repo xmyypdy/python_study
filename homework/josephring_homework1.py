@@ -152,6 +152,37 @@ def performance_test():
     print(f"性能比 (列表/队列): {list_time/queue_time:.2f}")
     print(f"性能比 (链表/队列): {linked_list_time/queue_time:.2f}")
 
+
+def scalability_test():
+    """可扩展性测试"""
+    test_sizes = [1000 , 5000 , 10000 , 20000] 
+    k = 100
+    start_person = 0
+    list_times = []
+    queue_times = []
+    linked_list_times = []
+
+    for n in test_sizes:
+        # 测试列表实现
+        start_time = time.time()
+        achieve_josephring_list(n, k, start_person)
+        list_time = time.time() - start_time
+        list_times.append(list_time)
+
+        # 测试队列实现
+        start_time = time.time()
+        achieve_josephring_deque(n, k, start_person)
+        queue_time = time.time() - start_time
+        queue_times.append(queue_time)
+
+        # 测试链表实现
+        start_time = time.time()
+        achieve_josephring_linked_list(n, k, start_person)
+        linked_list_time = time.time() - start_time
+        linked_list_times.append(linked_list_time)
+
+        print(f"n={n}: 列表={list_time:.4f}s, 队列={queue_time:.4f}s, 链表={linked_list_time:.4f}s")
+
 if __name__ == "__main__":
     try:
         print("=== 性能测试 ===")
