@@ -128,7 +128,7 @@ def performance_test():
     """性能测试函数"""
     n = 2000
     k = 100
-    start_person = 0  # 固定起始位置
+    start_person = 0  # 固定起始位置 
 
     # 测试列表实现
     start_time = time.time()                #记录当前的开始时间
