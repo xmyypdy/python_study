@@ -174,7 +174,7 @@ def scalability_test():
         queue_time = time.time() - start_time
         queue_times.append(queue_time)
 
-        # 测试链表实现11
+        # 测试链表实现1122
         start_time = time.time()
         achieve_josephring_linked_list(n, k, start_person)
         linked_list_time = time.time() - start_time
