@@ -15,7 +15,7 @@ def simulate_josephus_elimination_list(people, start_index, step):
         print("剩余人员:", people, "\n")
         '''
     return elimination_order                    # 返回淘汰顺序（最后幸存者未包含）
-#test
+#test1
 def achieve_josephring_list(total_people, step, start_person):
     """实现约瑟夫环，返回完整的淘汰顺序（包括最后幸存者）。"""
     # 参数合法性校验
@@ -174,7 +174,7 @@ def scalability_test():
         queue_time = time.time() - start_time
         queue_times.append(queue_time)
 
-        # 测试链表实现1234567
+        # 测试链表实现1122
         start_time = time.time()
         achieve_josephring_linked_list(n, k, start_person)
         linked_list_time = time.time() - start_time
