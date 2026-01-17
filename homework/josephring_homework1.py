@@ -54,6 +54,68 @@ def achieve_josephring_deque(total_people, step, start_person):
         raise ValueError("参数数值不合法（总人数和报值数必须≥1，指定的人要在0~n-1之间）")
     return simulate_josephus_elimination_deque(total_people, step, start_person)
 
+class ListNode:
+    """单向链表节点"""
+    __slots__ = ('val', 'next')             #限制这个类只能有 val 和 next 两个属性，val：存储人的编号，next：指向下一个节点
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def simulate_josephus_elimination_linked_list(total_people, step, start_person):
+    """使用循环单链表实现约瑟夫环，返回完整淘汰顺序（含最后幸存者）。"""
+    if total_people == 1:   
+        return [0]                          #特殊情况：只有 1 个人，直接返回 [0]
+
+    '''构建循环链表: 0 -> 1 -> ... -> n-1 -> 0'''
+    head = ListNode(0)                      #创建一个 ListNode节点，它的val是 0
+    current_node = head                     #current_node初始指向 head
+    for i in range(1, total_people):
+        current_node.next = ListNode(i)     #给当前节点的 next 指向一个新节点
+        current_node = current_node.next    #移动指针到新节点
+    current_node.next = head                #最后一个值的next指向0，形成环
+
+    '''定位到起始节点start_person'''
+    previous_node = None                    #current_node的前一个节点
+    current_node = head
+    for _ in range(start_person):           #使用_作占位符，循环start_person次
+        previous_node = current_node
+        current_node = current_node.next
+
+    '''如果从索引 0 开始，需手动找到尾节点作为 previous_node'''
+    if start_person == 0:
+        previous_node = current_node
+        while previous_node.next != current_node:   #current_node为0时，previous_node为n-1，循环找得尾结点
+            previous_node = previous_node.next
+
+    elimination_order = []
+    remaining_count = total_people
+
+
+    while remaining_count > 1:                  # 开始淘汰过程
+        for _ in range(step - 1):
+            previous_node = current_node
+            current_node = current_node.next    # 移动 (step - 1) 步
+
+        eliminated_person = current_node.val    #取出当前被淘汰的人的编号
+        elimination_order.append(eliminated_person) #把被淘汰者的编号记录到结果列表中
+
+        previous_node.next = current_node.next  # 跳过当前节点,即删除
+        current_node = current_node.next        # 移动 current_node 到下一个人
+        remaining_count -= 1                    # 剩余人数减 1
+        '''
+        # 链表实现的调试用打印语句
+        print(f"淘汰: {eliminated_person}, 当前下一人: {current_node.val}")
+        print("顺序:", elimination_order, "\n")
+        '''
+
+    elimination_order.append(current_node.val)  # 添加最后幸存者
+    return elimination_order
+
+
+def achieve_josephring_linked_list(total_people, step, start_person):
+    if total_people < 1 or step < 1 or not (0 <= start_person < total_people):
+        raise ValueError("参数数值不合法（总人数和报值数必须≥1，指定的人要在0~n-1之间）")
+    return simulate_josephus_elimination_linked_list(total_people, step, start_person)
 
 if __name__ == "__main__":
     try:
