@@ -28,6 +28,33 @@ def achieve_josephring(total_people, step, start_person):
     elimination_order.append(people[0]) # 将最后剩下的一个人追加到淘汰顺序末尾，形成完整序列
     return elimination_order
 
+from collections import deque                   #双端队列，支持两端插入/删除，非常适合模拟循环队列
+
+def simulate_josephus_elimination_deque(total_people, step, start_person):
+    """使用 deque 模拟约瑟夫环，返回完整淘汰顺序（含最后幸存者）。"""
+    people_deque = deque(range(total_people))   # 初始化人员编号 [0, 1, ..., n-1]
+    people_deque.rotate(-start_person)          # 从左向右的start_person个数，与其右边的所有数逆时针旋转，让 start_person 成为队列的第一个元素
+
+    elimination_order = []
+    while len(people_deque) > 1:
+        people_deque.rotate(-(step - 1))        # 将前 (step - 1) 人移到队尾
+        eliminated_person = people_deque.popleft()  # 队首为第 step 人，淘汰
+        elimination_order.append(eliminated_person)
+        '''
+        # 队列实现的调试用打印语句
+        print(f"淘汰的人: {eliminated_person}")
+        print("当前淘汰顺序:", elimination_order)
+        print("剩余人员（从当前队首开始）:", list(people_deque), "\n")
+        '''
+    elimination_order.append(people_deque[0])   # 添加最后幸存者
+    return elimination_order
+
+def achieve_josephring_deque(total_people, step, start_person):
+    if total_people < 1 or step < 1 or not (0 <= start_person < total_people):
+        raise ValueError("参数数值不合法（总人数和报值数必须≥1，指定的人要在0~n-1之间）")
+    return simulate_josephus_elimination_deque(total_people, step, start_person)
+
+
 if __name__ == "__main__":
     try:
         inputs = input("请输入参数，以逗号分隔（如 8,3 或 8,3,0）：")
@@ -54,23 +81,3 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"程序意外终止: {e}")
 
-from collections import deque                   #双端队列，支持两端插入/删除，非常适合模拟循环队列
-
-def simulate_josephus_elimination_deque(total_people, step, start_person):
-    """使用 deque 模拟约瑟夫环，返回完整淘汰顺序（含最后幸存者）。"""
-    people_deque = deque(range(total_people))   # 初始化人员编号 [0, 1, ..., n-1]
-    people_deque.rotate(-start_person)          # 从左向右的start_person个数，与其右边的所有数逆时针旋转，让 start_person 成为队列的第一个元素
-
-    elimination_order = []
-    while len(people_deque) > 1:
-        people_deque.rotate(-(step - 1))        # 将前 (step - 1) 人移到队尾
-        eliminated_person = people_deque.popleft()  # 队首为第 step 人，淘汰
-        elimination_order.append(eliminated_person)
-        '''
-        # 队列实现的调试用打印语句
-        print(f"淘汰的人: {eliminated_person}")
-        print("当前淘汰顺序:", elimination_order)
-        print("剩余人员（从当前队首开始）:", list(people_deque), "\n")
-        '''
-    elimination_order.append(people_deque[0])   # 添加最后幸存者
-    return elimination_order
