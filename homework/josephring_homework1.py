@@ -1,5 +1,5 @@
-def simulate_josephus_elimination(people, start_index, step):
-    """模拟约瑟夫环淘汰过程，返回淘汰顺序（不含最后一人）。"""
+def simulate_josephus_elimination_list(people, start_index, step):
+    """使用 list 实现约瑟夫环淘汰过程，返回淘汰顺序（不含最后一人）。"""
     elimination_order = []                      # 存储被淘汰人员的顺序
     current_index = start_index                 # 当前报数起始位置（下标从0开始）
     while len(people) > 1:                      # 当剩余人数大于1时，继续淘汰
@@ -9,24 +9,25 @@ def simulate_josephus_elimination(people, start_index, step):
         eliminated = people.pop(current_index)
         elimination_order.append(eliminated)    # 淘汰当前位置的人，并从列表中移除
         '''
-        # 调试用打印语句（当前已注释）
-        print(f"淘汰位置: {current_index}, 淘汰的人: {eliminated}") 
+        # 列表实现的调试用打印语句
+        print(f"淘汰位置: {current_index }, 淘汰的人: {eliminated}")
         print("当前淘汰顺序:", elimination_order)
         print("剩余人员:", people, "\n")
         '''
     return elimination_order                    # 返回淘汰顺序（最后幸存者未包含）
-
-
-def achieve_josephring(total_people, step, start_person):
+#test1
+def achieve_josephring_list(total_people, step, start_person):
     """实现约瑟夫环，返回完整的淘汰顺序（包括最后幸存者）。"""
     # 参数合法性校验
     if total_people < 1 or step < 1 or start_person < 0 or start_person > total_people-1:
         raise ValueError("参数数值不合法（总人数和报值数必须≥1，指定的人要在1~n之间）")
     people = list(range(total_people))  # 创建人员列表，编号从 0 开始：[0, 1, 2, ..., total_people-1]
     start_index = start_person          # 起始索引直接使用 start_person(下标从0开始)
-    elimination_order = simulate_josephus_elimination(people, start_index, step)# 模拟淘汰过程（返回除最后幸存者外的所有人）
+    elimination_order = simulate_josephus_elimination_list(people, start_index, step)# 模拟淘汰过程
     elimination_order.append(people[0]) # 将最后剩下的一个人追加到淘汰顺序末尾，形成完整序列
     return elimination_order
+
+
 
 from collections import deque                   #双端队列，支持两端插入/删除，非常适合模拟循环队列
 
@@ -53,6 +54,8 @@ def achieve_josephring_deque(total_people, step, start_person):
     if total_people < 1 or step < 1 or not (0 <= start_person < total_people):
         raise ValueError("参数数值不合法（总人数和报值数必须≥1，指定的人要在0~n-1之间）")
     return simulate_josephus_elimination_deque(total_people, step, start_person)
+
+
 
 class ListNode:
     """单向链表节点"""
@@ -117,24 +120,44 @@ def achieve_josephring_linked_list(total_people, step, start_person):
         raise ValueError("参数数值不合法（总人数和报值数必须≥1，指定的人要在0~n-1之间）")
     return simulate_josephus_elimination_linked_list(total_people, step, start_person)
 
+
+import time
+import matplotlib.pyplot as plt
+
+def performance_test():
+    """性能测试函数"""
+    n = 2000
+    k = 100
+    start_person = 0  # 固定起始位置
+
+    # 测试列表实现
+    start_time = time.time()                #记录当前的开始时间
+    achieve_josephring_list(n, k, start_person)
+    list_time = time.time() - start_time    #消耗时间等于结束时间与开始时间之差
+    print(f"列表实现耗时: {list_time:.4f}秒")
+
+    # 测试队列实现
+    start_time = time.time()
+    achieve_josephring_deque(n, k, start_person)
+    queue_time = time.time() - start_time
+    print(f"队列实现耗时: {queue_time:.4f}秒")
+
+    # 测试链表实现
+    start_time = time.time()
+    achieve_josephring_linked_list(n, k, start_person)
+    linked_list_time = time.time() - start_time
+    print(f"链表实现耗时: {linked_list_time:.4f}秒")
+
+    # 性能比较分析
+    print(f"性能比 (列表/队列): {list_time/queue_time:.2f}")
+    print(f"性能比 (链表/队列): {linked_list_time/queue_time:.2f}")
+
 if __name__ == "__main__":
     try:
-        inputs = input("请输入参数，以逗号分隔（如 8,3 或 8,3,0）：")
-        inputs = inputs.replace("，", ",").replace(" ", "").replace("　", "")#将输入中的中文逗号丶缩进和空格变成英文的
-        inputs = list(map(str.strip, inputs.split(",")))#将输入字符串按逗号分割，并去除每项首尾空白，如 "8,3,1" → ["8", "3", "1"]
-
-        if len(inputs) != 2 and len(inputs) != 3:           # 检查参数个数是否为2或3
-            raise ValueError("输入的参数不对，程序无法正常运行")
-        total_people = int(inputs[0])
-        step = int(inputs[1])
-        if len(inputs) == 3:
-            start_person = int(inputs[2])
-        else:
-            start_person = 0
-
-        result = achieve_josephring(total_people,step,start_person)
-        print(f"淘汰顺序为: {result}")
-
+        print("=== 性能测试 ===")
+        performance_test()
+        print("\n=== 可扩展性测试 ===")
+        scalability_test()
     except ValueError as e:
         if "literal" in str(e):
             print("错误: 输入的参数必须是整数（请检查是否用了字母、小数、中文等）")
@@ -142,4 +165,3 @@ if __name__ == "__main__":
             print(f"错误: {e}")
     except Exception as e:
         print(f"程序意外终止: {e}")
-
