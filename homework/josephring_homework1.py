@@ -189,6 +189,7 @@ if __name__ == "__main__":
         performance_test()
         print("\n=== 可扩展性测试 ===")
         scalability_test()
+        print("test1")
     except ValueError as e:
         if "literal" in str(e):
             print("错误: 输入的参数必须是整数（请检查是否用了字母、小数、中文等）")
